@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Air Quality</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column; /* Altera para coluna */
+            align-items: center; /* Centraliza os itens */
+        }
+        header {
+            background-color: #1473e6;
+            color: white;
+            padding: 20px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .flex-container {
+            display: flex;
+            justify-content: center; /* Centraliza os containers */
+            margin-top: 20px; /* Espaço entre o header e os containers */
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            align-items: center;
+        }
+        
+        .side-container {
+            max-width: 300px;
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin: 0;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        input[type="number"], input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        input[type="number"]:focus, input[type="text"]:focus, select:focus {
+            border-color: #1473e6;
+            outline: none;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #1473e6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0f5bbf;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>AI Air Quality</h1>
+    </header>
+    <div class="flex-container">
+        <div class="container">
+            <form>
+                <label for="co2">Quantidade de CO2 (ppm):</label>
+                <input type="number" id="co2" name="co2" required>
+
+                <label for="pm25">Quantidade de PM2.5 (µg/m³):</label>
+                <input type="number" id="pm25" name="pm25" required>
+
+                <label for="umidade">Umidade do Ar (%):</label>
+                <input type="number" id="umidade" name="umidade" required>
+
+                <label for="temperatura">Temperatura (°C):</label>
+                <input type="number" id="temperatura" name="temperatura" required>
+
+                <button type="submit" id="calculador_butao">Calcular Qualidade do Ar</button>
+            </form>
+        </div>
+        
+        <div class="side-container">
+            <form>
+                <label for="estado">Selecione o Estado:</label>
+                <select id="estado" name="estado" required>
+                    <option value="">Selecione um Estado</option>
+                    <option value="AC">Acre</option>
+                    <option value="AL">Alagoas</option>
+                    <option value="AP">Amapá</option>
+                    <option value="AM">Amazonas</option>
+                    <option value="BA">Bahia</option>
+                    <option value="CE">Ceará</option>
+                    <option value="DF">Distrito Federal</option>
+                    <option value="ES">Espírito Santo</option>
+                    <option value="GO">Goiás</option>
+                    <option value="MA">Maranhão</option>
+                    <option value="MT">Mato Grosso</option>
+                    <option value="MS">Mato Grosso do Sul</option>
+                    <option value="MG">Minas Gerais</option>
+                    <option value="PA">Pará</option>
+                    <option value="PB">Paraíba</option>
+                    <option value="PR">Paraná</option>
+                    <option value="PE">Pernambuco</option>
+                    <option value="PI">Piauí</option>
+                    <option value="RJ">Rio de Janeiro</option>
+                    <option value="RN">Rio Grande do Norte</option>
+                    <option value="RS">Rio Grande do Sul</option>
+                    <option value="RO">Rondônia</option>
+                    <option value="RR">Roraima</option>
+                    <option value="SC">Santa Catarina</option>
+                    <option value="SP">São Paulo</option>
+                    <option value="SE">Sergipe</option>
+                    <option value="TO">Tocantins</option>
+                </select>
+
+                <label for="cidade">Digite a Cidade:</label>
+                <input type="text" id="cidade" name="cidade" required>
+
+                <button type="submit">Encontrar Cidade</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
