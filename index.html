@@ -12,34 +12,28 @@
             margin: 0;
             padding: 0;
             display: flex;
-            flex-direction: column; /* Altera para coluna */
-            align-items: center; /* Centraliza os itens */
+            flex-direction: column;
+            align-items: center;
         }
         header {
             background-color: #1473e6;
             color: white;
-            padding: 20px;
             width: 100%;
             text-align: center;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         .flex-container {
             display: flex;
-            justify-content: center; /* Centraliza os containers */
-            margin-top: 20px; /* Espaço entre o header e os containers */
+            justify-content: center;
+            margin-top: 20px;
         }
-        .container {
-            max-width: 600px;
-            margin: 20px;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        .container, .side-container {
+            display: flex;
+            flex-direction: column;
             align-items: center;
-        }
-        
-        .side-container {
-            max-width: 300px;
+            justify-content: center;
+            text-align: center;
+            max-width: 600px;
             margin: 20px;
             padding: 20px;
             background-color: white;
@@ -47,7 +41,7 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         h1 {
-            margin: 0;
+            margin: 20px;
         }
         label {
             display: block;
@@ -56,6 +50,7 @@
         }
         input[type="number"], input[type="text"], select {
             width: 100%;
+            max-width: 300px;
             padding: 10px;
             margin-top: 5px;
             border: 1px solid #ccc;
@@ -79,6 +74,63 @@
         button:hover {
             background-color: #0f5bbf;
         }
+        footer {
+            margin-top: 30px;
+            width: 100%;
+            background-color: #f4f4f4;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 10px;
+        }
+        th {
+            background-color: #1473e6;
+            color: white;
+        }
+        .good {
+            background-color: #00a651;
+            color: white;
+        }
+        .moderate {
+            background-color: #ffde33;
+        }
+        .unhealthy-sensitive {
+            background-color: #ff0000;
+            color: black;
+        }
+        .graphics-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .graphic-box {
+            width: 100%;
+            height: 100%px;
+            background-color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        .graphic-box img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 10px;
+        }
+        .center-button {
+            text-align: center;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -87,7 +139,7 @@
     </header>
     <div class="flex-container">
         <div class="container">
-            <form>
+            <form id="form-calculo">
                 <label for="co2">Quantidade de CO2 (ppm):</label>
                 <input type="number" id="co2" name="co2" required>
 
@@ -143,7 +195,88 @@
 
                 <button type="submit">Encontrar Cidade</button>
             </form>
+            <label for="qualidade">Qualidade do Ar:</label>
+            <p id="resultado_qualidade">---</p>
         </div>
     </div>
-</body>
-</html>
+
+    <footer>
+        <table>
+            <thead>
+                <tr>
+                    <th>Categoria</th>
+                    <th>Descrição</th>
+                    <th>Impacto na Saúde</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="good">Boa</td>
+                    <td>A qualidade do ar é considerada satisfatória e a poluição atmosférica representa pouco ou nenhum risco.</td>
+                    <td>Nenhum</td>
+                </tr>
+                <tr>
+                    <td class="moderate">Moderada</td>
+                    <td>Membros de grupos sensíveis podem sofrer efeitos na saúde. O público em geral provavelmente não será afetado.</td>
+                    <td>Crianças e adultos ativos e pessoas com doenças respiratórias, como asma, devem limitar o esforço prolongado ao ar livre</td>
+                </tr>
+                <tr>
+                    <td class="unhealthy-sensitive">Ruim</td>
+                    <td>Alerta de saúde: todos podem sofrer efeitos mais graves para a saúde</td>
+                    <td>Todos devem evitar todos os esforços ao ar livre</td>
+                </tr>
+            </tbody>
+        </table>
+    </footer>
+
+    <!-- Botão centralizado para gerar gráficos -->
+    <div class="center-button">
+        <button id="gerar_graficos">Gerar Gráficos</button>
+    </div>
+
+    <!-- Quadrados para exibir os gráficos -->
+    <div class="graphics-container">
+        <div class="graphic-box" id="grafico1"><img src="/graficos/co2.png" alt=""></div>
+        <div class="graphic-box" id="grafico2"><img src="/graficos/pm25.png" alt=""></div>
+        <div class="graphic-box" id="grafico3"><img src="/graficos/umidade.png" alt=""></div>
+        <div class="graphic-box" id="grafico4"><img src="/graficos/temperatura.png" alt=""></div>
+        <div class="graphic-box" id="grafico5"><img src="/graficos/qualidade_ar.png" alt=""></div>
+    </div>
+
+    <script>
+        document.getElementById('form-calculo').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const co2 =  parseFloat(document.getElementById('co2').value);            const pm25 = document.getElementById('pm25').value;
+            const umidade = parseFloat(document.getElementById('umidade').value);
+            const temperatura = parseFloat(document.getElementById('temperatura').value);
+
+            const dados = {
+                CO2: co2,
+                'PM2.5': pm25,
+                Umidade: umidade,
+                Temperatura: temperatura
+            };
+            console.log(dados)
+
+            fetch('http://127.0.0.1:5000/calcular', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dados)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('resultado_qualidade').textContent = `${data.qualidade_descricao} (${data.qualidade_percentual.toFixed(2)}%)`;
+            })
+            .catch(error => console.error('Erro:', error));
+        });
+
+        document.getElementById('gerar_graficos').addEventListener('click', function () {
+            fetch('http://127.0.0.1:5000/gerar_graficos')
+            .then(response => response.json())
+            console.log(response)
+
+        });
+    </script>
