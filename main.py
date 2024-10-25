@@ -7,8 +7,6 @@ import os
 import matplotlib
 matplotlib.use('Agg') # para Traballga com a biblioteca em modo back end
 import matplotlib.pyplot as plt
-import subprocess
-import sys
 
 # Retira a depedencia do navegador 
 app = Flask(__name__)
@@ -238,18 +236,11 @@ def calcular_qualidade():
         return jsonify({"erro": str(e)}), 400
     
 
-def install_requirements():
-    try:
-        # Verifica se 'pip' está instalado e tenta rodar 'pip install'
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
-    except subprocess.CalledProcessError as e:
-        print(f"Erro ao instalar dependências: {e}")
-        sys.exit(1)
 
 
     
 if __name__ == '__main__':
-    install_requirements()
+    
     if not os.path.exists('graficos'):
         os.makedirs('graficos')
     

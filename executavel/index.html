@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Air Quality</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>AI Air Quality</h1>
+    </header>
+    <div class="flex-container">
+        <div class="container">
+            <form id="form-calculo">
+                <label for="co2">Quantidade de CO2 (ppm):</label>
+                <input type="number" id="co2" name="co2" required>
+
+                <label for="pm25">Quantidade de PM2.5 (µg/m³):</label>
+                <input type="number" id="pm25" name="pm25" required>
+
+                <label for="umidade">Umidade do Ar (%):</label>
+                <input type="number" id="umidade" name="umidade" required>
+
+                <label for="temperatura">Temperatura (°C):</label>
+                <input type="number" id="temperatura" name="temperatura" required>
+
+                <button type="submit" id="calculador_butao">Calcular Qualidade do Ar</button>
+            </form>
+        </div>
+        
+        <div class="side-container">
+            <div class="progress-circle" style="--percentage: 80;">
+                <span id="percentage-text">0%</span>
+            </div>
+            <label for="qualidade">Qualidade do Ar:</label>
+            <p id="resultado_qualidade">---</p>
+        </div>
+    </div>
+
+    <footer>
+        <table>
+            <thead>
+                <tr>
+                    <th>Categoria</th>
+                    <th>Descrição</th>
+                    <th>Impacto na Saúde</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="good">Boa</td>
+                    <td>A qualidade do ar é considerada satisfatória e a poluição atmosférica representa pouco ou nenhum risco.</td>
+                    <td>Nenhum</td>
+                </tr>
+                <tr>
+                    <td class="moderate">Moderada</td>
+                    <td>Membros de grupos sensíveis podem sofrer efeitos na saúde. O público em geral provavelmente não será afetado.</td>
+                    <td>Crianças e adultos ativos e pessoas com doenças respiratórias, como asma, devem limitar o esforço prolongado ao ar livre</td>
+                </tr>
+                <tr>
+                    <td class="unhealthy-sensitive">Ruim</td>
+                    <td>Alerta de saúde: todos podem sofrer efeitos mais graves para a saúde</td>
+                    <td>Todos devem evitar todos os esforços ao ar livre</td>
+                </tr>
+            </tbody>
+        </table>
+    </footer>
+
+    <!-- Botão centralizado para gerar gráficos -->
+    <div class="center-button">
+        <button id="gerar_graficos" onclick="reload_graficos()">Gerar Gráficos</button>
+    </div>
+
+    <!-- Quadrados para exibir os gráficos -->
+    <div class="graphics-container">
+        <img src="graficos/co2.png" alt="Gráfico CO2">
+        <img src="graficos/pm25.png" alt="Gráfico PM2.5">
+        <img src="graficos/umidade.png" alt="Gráfico Umidade">
+        <img src="graficos/temperatura.png" alt="Gráfico Temperatura">
+        <img src="graficos/qualidade_ar.png" alt="Gráfico Qualidade do Ar">
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>
