@@ -1,55 +1,43 @@
+from flask import Flask, request, jsonify, send_file
+from flask_cors import CORS  # Importar CORS
 import numpy as np
 import skfuzzy as fuzz
 from skfuzzy import control as ctrl
-import tkinter as tk
+import matplotlib.pyplot as plt
+import os
+import glob  # Para remover arquivos
 
+# Inicializa o app Flask
+app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})
+
+# Função para apagar gráficos antigos
+def apagar_graficos_antigos(pasta):
+    arquivos = glob.glob(os.path.join(pasta, '*'))
+    for arquivo in arquivos:
+        try:
+            os.remove(arquivo)
+        except Exception as e:
+            print(f"Erro ao apagar o arquivo {arquivo}: {e}")
 
 # Map the numerical output to linguistic terms
 def map_qualidade(resultado_desgaste):
     if resultado_desgaste < 30:
         return "Boa"
-    elif 1 <= resultado_desgaste <= 60: 
+    elif 30 <= resultado_desgaste <= 60:
         return "Moderada"
     else:
         return "Ruim"
 
-
-# Função para calcular o desgaste
-def Calcular_qualidade_Ar():
-    co2_func = int(entrada_co2.get())
-    pm25_func = int(entrada_pm25.get())
-    umidade_func = int(entrada_umidade.get())
-    temperatura_func = int(entrada_temperatura.get())
-
-
-    qualidade_do_ar_simulador.input['CO2'] = co2_func
-    qualidade_do_ar_simulador.input['PM2.5'] = pm25_func
-    qualidade_do_ar_simulador.input['UMIDADE'] = umidade_func
-    qualidade_do_ar_simulador.input['TEMPERATURA'] = temperatura_func
-
-    
-    qualidade_do_ar_simulador.compute()
-
-    resultado_desgaste = qualidade_do_ar_simulador.output["QUALIDADE"]
-    resultado_texto = map_qualidade(resultado_desgaste)
-    print("A qualidade do AR é de", qualidade_do_ar_simulador.output['QUALIDADE'], "%")
-    resultado_label.config(text=f"A qualidade do AR É {resultado_texto}")
-
- 
-# Cria uma instância da janela
-janela = tk.Tk()
-janela.title("Air Quality")
-
-# Variáveis Linguísticas
-co2 = ctrl.Antecedent(np.arange(0,1001,1), 'CO2')
-pm25 = ctrl.Antecedent(np.arange(0,366,1), 'PM2.5')
+# Definição de variáveis linguísticas
+co2 = ctrl.Antecedent(np.arange(0, 1001, 1), 'CO2')
+pm25 = ctrl.Antecedent(np.arange(0, 366, 1), 'PM2.5')
 umidade = ctrl.Antecedent(np.arange(0, 101, 1), 'UMIDADE')
-temperatura = ctrl.Antecedent(np.arange(-10, 51, 1), 'TEMPERATURA')  # Temperatura em °C
+temperatura = ctrl.Antecedent(np.arange(-10, 51, 1), 'TEMPERATURA')
 
 qualidade_ar = ctrl.Consequent(np.arange(0, 101, 1), 'QUALIDADE')
 
-# Conjuntos de Termos Linguísticos (membership function tipo trapezoidal)
-
+# Conjuntos fuzzy
 co2['Baixo'] = fuzz.trapmf(co2.universe, [0, 0, 300, 400])
 co2['Medio'] = fuzz.trapmf(co2.universe, [350, 450, 650, 750])
 co2['Alto'] = fuzz.trapmf(co2.universe, [700, 850, 1000, 1000])
@@ -66,11 +54,9 @@ temperatura['Fria'] = fuzz.trimf(temperatura.universe, [-10, -10, 15])
 temperatura['Agradavel'] = fuzz.trimf(temperatura.universe, [10, 20, 30])
 temperatura['Quente'] = fuzz.trimf(temperatura.universe, [28, 35, 50])
 
-
 qualidade_ar['Boa'] = fuzz.trapmf(qualidade_ar.universe, [0, 0, 30, 40])
 qualidade_ar['Moderada'] = fuzz.trapmf(qualidade_ar.universe, [30, 40, 60, 70])
 qualidade_ar['Ruim'] = fuzz.trapmf(qualidade_ar.universe, [60, 70, 85, 100])
-
 
 # CO2 Baixo
 rule1 = ctrl.Rule(co2['Baixo'] & pm25['Baixo'] & umidade['Baixo'] & temperatura['Fria'], qualidade_ar['Boa'])
@@ -178,61 +164,92 @@ qualidade_ar_ctrl = ctrl.ControlSystem([
     rule79, rule80, rule81
 ])
 qualidade_do_ar_simulador = ctrl.ControlSystemSimulation(qualidade_ar_ctrl)
-
-
-# Plot do gráfico
 def exibir_grafico():
-    pm25.view(sim=qualidade_do_ar_simulador)
+    # Apagar gráficos antigos
+    apagar_graficos_antigos('graficos')
+
+    graficos = []
+    
+    # Salva gráficos para CO2
     co2.view(sim=qualidade_do_ar_simulador)
+    grafico_co2 = "graficos/co2.png"
+    plt.savefig(grafico_co2)
+    plt.close()
+    graficos.append(grafico_co2)
+
+    # Salva gráficos para PM2.5
+    pm25.view(sim=qualidade_do_ar_simulador)
+    grafico_pm25 = "graficos/pm25.png"
+    plt.savefig(grafico_pm25)
+    plt.close()
+    graficos.append(grafico_pm25)
+
+    # Salva gráficos para Umidade
     umidade.view(sim=qualidade_do_ar_simulador)
+    grafico_umidade = "graficos/umidade.png"
+    plt.savefig(grafico_umidade)
+    plt.close()
+    graficos.append(grafico_umidade)
+
     temperatura.view(sim=qualidade_do_ar_simulador)
+    grafico_temperatura = "graficos/temperatura.png"
+    plt.savefig(grafico_temperatura)
+    plt.close()
+    graficos.append(grafico_temperatura)
+
+    # Salva gráfico para Qualidade do Ar
     qualidade_ar.view(sim=qualidade_do_ar_simulador)
+    grafico_qualidade = "graficos/qualidade_ar.png"
+    plt.savefig(grafico_qualidade)
+    plt.close()
+    graficos.append(grafico_qualidade)
 
+    return graficos
 
-# Cria um frame para organizar os widgets
-frame = tk.Frame(janela)
-frame.pack(padx=50, pady=50)
+# Endpoint da API para calcular a qualidade do ar
+@app.route('/calcular', methods=['POST'])
+def calcular_qualidade():
+    try:
+        dados = request.json
 
-# Label para o título
-titulo_label = tk.Label(frame, text="Air Quality - Diagnóstico de qualidade do AR",font=("Helvetica", 20),fg="#1473e6")
-titulo_label.pack(side="top", padx=50, pady=50)
+        co2_func = float(dados.get('CO2'))
+        pm25_func = float(dados.get('PM2.5'))
+        umidade_func = float(dados.get('Umidade'))
+        temperatura_func = float(dados.get('Temperatura'))
 
-# Entrada de dados
-co2_label = tk.Label(frame,text="Quantidade de CO2 na Atmosfera",font=("Helvetica", 14))
-co2_label.pack(pady=5)
-entrada_co2 = tk.Entry(frame)
-entrada_co2.pack(pady=5)
+        # Configura as entradas do simulador
+        qualidade_do_ar_simulador.input['CO2'] = co2_func
+        qualidade_do_ar_simulador.input['PM2.5'] = pm25_func
+        qualidade_do_ar_simulador.input['UMIDADE'] = umidade_func
+        qualidade_do_ar_simulador.input['TEMPERATURA'] = temperatura_func
 
-# Label e entrada para poluentes
-pm25_label = tk.Label(frame, text="Quantidade de particulas pulentes PM2.5", font=("Helvetica", 14))
-pm25_label.pack(pady=5)
-entrada_pm25 = tk.Entry(frame)
-entrada_pm25.pack(pady=5)
+        # Calcula a qualidade do ar
+        qualidade_do_ar_simulador.compute()
 
-# Label umidade do ar
-umidade_label = tk.Label(frame, text="UMIDADE do AR %", font=("Helvetica", 14))
-umidade_label.pack(pady=5)
-entrada_umidade = tk.Entry(frame)
-entrada_umidade.pack(pady=5)
+        # Resultado fuzzy
+        resultado_desgaste = qualidade_do_ar_simulador.output['QUALIDADE']
+        resultado_texto = map_qualidade(resultado_desgaste)
 
-# Label de temperatura
-temperatura_label = tk.Label(frame, text="Temperatura em  C°", font=("Helvetica", 14))
-temperatura_label.pack(pady=5)
-entrada_temperatura = tk.Entry(frame)
-entrada_temperatura.pack(pady=5)
+        return jsonify({
+            "qualidade_percentual": resultado_desgaste,
+            "qualidade_descricao": resultado_texto
+        })
 
+    except Exception as e:
+        return jsonify({"erro": str(e)}), 400
 
-# Botão para calcular a qualidade do ar
-calcular_botao = tk.Button(frame, text="Calcular Qualidade do AR", command=Calcular_qualidade_Ar, bg="#1473e6", fg="white")
-calcular_botao.pack(pady=30)
+# Gera os gráficos e retorna a lista
+@app.route('/gerar_graficos', methods=['GET'])
+def gerar_graficos():
+    try:
+        graficos = exibir_grafico()
+        return jsonify({"graficos": graficos})
+    except Exception as e:
+        return jsonify({"erro": str(e)}), 400
 
-# Botão para exibir o gráfico
-exibir_grafico_botao = tk.Button(frame, text="Exibir Gráfico", command=exibir_grafico, bg="#1473e6", fg="white")
-exibir_grafico_botao.pack(pady=15)
+# Roda o servidor Flask
+if __name__ == '__main__':
+    if not os.path.exists('graficos'):
+        os.makedirs('graficos')
 
-# Label para exibir o resultado
-resultado_label = tk.Label(frame, text="", font=("Helvetica", 16), fg="red")
-resultado_label.pack(pady=10)
-
-# Inicia o loop principal da interface
-janela.mainloop()
+    app.run(debug=True)
