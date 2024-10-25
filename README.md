@@ -7,3 +7,12 @@ Python para processamento e análise de dados.
 APIs públicas de qualidade do ar (e.g., OpenWeather, AirVisual) para coleta de dados.
 Pandas e NumPy para manipulação de dados.
 Matplotlib/Seaborn para visualização de gráficos.
+
+requerimentos do projeto
+
+Flask
+Flask-Cors
+numpy
+scikit-fuzzy
+matplotlib
+
