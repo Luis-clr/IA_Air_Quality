@@ -69,17 +69,18 @@
 
     <!-- Botão centralizado para gerar gráficos -->
     <div class="center-button">
-        <button id="gerar_graficos">Gerar Gráficos</button>
+        <button id="gerar_graficos" onclick="reload_graficos()">Gerar Gráficos</button>
     </div>
 
     <!-- Quadrados para exibir os gráficos -->
     <div class="graphics-container">
-        <div class="graphic-box" id="grafico1"><img src="/graficos/co2.png" alt=""></div>
-        <div class="graphic-box" id="grafico2"><img src="/graficos/pm25.png" alt=""></div>
-        <div class="graphic-box" id="grafico3"><img src="/graficos/umidade.png" alt=""></div>
-        <div class="graphic-box" id="grafico4"><img src="/graficos/temperatura.png" alt=""></div>
-        <div class="graphic-box" id="grafico5"><img src="/graficos/qualidade_ar.png" alt=""></div>
+        <img src="graficos/co2.png" alt="Gráfico CO2">
+        <img src="graficos/pm25.png" alt="Gráfico PM2.5">
+        <img src="graficos/umidade.png" alt="Gráfico Umidade">
+        <img src="graficos/temperatura.png" alt="Gráfico Temperatura">
+        <img src="graficos/qualidade_ar.png" alt="Gráfico Qualidade do Ar">
     </div>
+
 
     <script src="script.js"></script>
 

@@ -109,7 +109,7 @@ th {
     width: 100%;
     height: 100%px;
     background-color: #e0e0e0;
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     border: 1px solid #ccc;
@@ -126,7 +126,7 @@ height: 120px;
 border-radius: 50%; /* Arredonda para ser um círculo */
 position: relative;
 --duration: 1s;
-background: conic-gradient(yellow calc(var(--percentage) * 1%), #e4e4e4 0); /* Definição inicial */
+background: conic-gradient(rgb(255, 255, 255) calc(var(--percentage) * 1%), #ffffff 0); /* Definição inicial */
 }
 
 .progress-circle::before {

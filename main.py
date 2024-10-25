@@ -7,18 +7,16 @@ import os
 import matplotlib
 matplotlib.use('Agg') # para Traballga com a biblioteca em modo back end
 import matplotlib.pyplot as plt
-import webbrowser
-import threading
 
 # Retira a depedencia do navegador 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Retorna o resultado da qualidade 
-def map_qualidade(resultado_desgaste):
-    if resultado_desgaste < 30:
+def map_qualidade(resultado_qualidae):
+    if resultado_qualidae < 30:
         return "Boa"
-    elif 30 <= resultado_desgaste <= 60:
+    elif 30 <= resultado_qualidae <= 60:
         return "Moderada"
     else:
         return "Ruim"
@@ -226,46 +224,21 @@ def calcular_qualidade():
         qualidade_do_ar_simulador.compute()
 
         # Resultado fuzzy
-        resultado_desgaste = qualidade_do_ar_simulador.output['QUALIDADE']
-        resultado_texto = map_qualidade(resultado_desgaste)
-
+        resultado_qualidae = qualidade_do_ar_simulador.output['QUALIDADE']
+        resultado_texto = map_qualidade(resultado_qualidae)
+        Gerar_graficos()
         return jsonify({
-            "qualidade_percentual": resultado_desgaste,
+            "qualidade_percentual": resultado_qualidae,
             "qualidade_descricao": resultado_texto
         })
 
     except Exception as e:
         return jsonify({"erro": str(e)}), 400
+    
 
-# Gera os gráficos e retorna a lista em formato Json
-@app.route('/gerar_graficos', methods=['GET'])
-def gerar_graficos():
-    try:
-        graficos = Gerar_graficos()
-        return jsonify({"graficos": graficos})
-    except Exception as e:
-        return jsonify({"erro": str(e)}), 400
-
-
-# Rota para abrir o index automaticamente 
-@app.route('/')
-def index():
-    webbrowser.open("http://127.0.0.1:5500/index.html", new=1)
-
-
-# Rota para abrir o app com as rotas para ser consumido na WEB
-def AppRptas():
-    app.run(port=5000)  
-
-
+    
 if __name__ == '__main__':
     if not os.path.exists('graficos'):
         os.makedirs('graficos')
     
-    flask_thread = threading.Thread(target=AppRptas)
-    flask_thread.start()
-
-    # Inicia a thread para abrir o HTML
-    html_thread = threading.Thread(target=index)
-    html_thread.start()
-
+    app.run(port=5000)  

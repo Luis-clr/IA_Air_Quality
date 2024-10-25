@@ -29,12 +29,13 @@ document.getElementById('form-calculo').addEventListener('submit', function (e) 
     .catch(error => console.error('Erro:', error));
 });
 
-document.getElementById('gerar_graficos').addEventListener('click', function () {
-    fetch('http://127.0.0.1:5000/gerar_graficos')
-    .then(response => response.json())
-    console.log(response)
+function reload_graficos() {
 
-});
+    setTimeout(function() {
+        location.reload(); // Recarrega a página após 2 segundos
+    }, 2000); // 2000 milissegundos = 2 segundos
+}
+
 
 function updateProgress(percentage) {
 const progressCircle = document.querySelector('.progress-circle');
