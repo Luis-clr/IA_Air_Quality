@@ -1,26 +1,20 @@
-from flask import Flask, request, jsonify, send_file
-from flask_cors import CORS  # Importar CORS
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import numpy as np
 import skfuzzy as fuzz
 from skfuzzy import control as ctrl
-import matplotlib.pyplot as plt
 import os
-import glob  # Para remover arquivos
+import matplotlib
+matplotlib.use('Agg') # para Traballga com a biblioteca em modo back end
+import matplotlib.pyplot as plt
+import webbrowser
+import threading
 
-# Inicializa o app Flask
+# Retira a depedencia do navegador 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-# Função para apagar gráficos antigos
-def apagar_graficos_antigos(pasta):
-    arquivos = glob.glob(os.path.join(pasta, '*'))
-    for arquivo in arquivos:
-        try:
-            os.remove(arquivo)
-        except Exception as e:
-            print(f"Erro ao apagar o arquivo {arquivo}: {e}")
-
-# Map the numerical output to linguistic terms
+# Retorna o resultado da qualidade 
 def map_qualidade(resultado_desgaste):
     if resultado_desgaste < 30:
         return "Boa"
@@ -29,12 +23,12 @@ def map_qualidade(resultado_desgaste):
     else:
         return "Ruim"
 
+
 # Definição de variáveis linguísticas
 co2 = ctrl.Antecedent(np.arange(0, 1001, 1), 'CO2')
 pm25 = ctrl.Antecedent(np.arange(0, 366, 1), 'PM2.5')
 umidade = ctrl.Antecedent(np.arange(0, 101, 1), 'UMIDADE')
 temperatura = ctrl.Antecedent(np.arange(-10, 51, 1), 'TEMPERATURA')
-
 qualidade_ar = ctrl.Consequent(np.arange(0, 101, 1), 'QUALIDADE')
 
 # Conjuntos fuzzy
@@ -58,7 +52,7 @@ qualidade_ar['Boa'] = fuzz.trapmf(qualidade_ar.universe, [0, 0, 30, 40])
 qualidade_ar['Moderada'] = fuzz.trapmf(qualidade_ar.universe, [30, 40, 60, 70])
 qualidade_ar['Ruim'] = fuzz.trapmf(qualidade_ar.universe, [60, 70, 85, 100])
 
-# CO2 Baixo
+# Regras fuzzy
 rule1 = ctrl.Rule(co2['Baixo'] & pm25['Baixo'] & umidade['Baixo'] & temperatura['Fria'], qualidade_ar['Boa'])
 rule2 = ctrl.Rule(co2['Baixo'] & pm25['Medio'] & umidade['Baixo'] & temperatura['Fria'], qualidade_ar['Boa'])
 rule3 = ctrl.Rule(co2['Baixo'] & pm25['Alto'] & umidade['Baixo'] & temperatura['Fria'], qualidade_ar['Boa'])
@@ -89,7 +83,6 @@ rule25 = ctrl.Rule(co2['Baixo'] & pm25['Baixo'] & umidade['Alta'] & temperatura[
 rule26 = ctrl.Rule(co2['Baixo'] & pm25['Medio'] & umidade['Alta'] & temperatura['Quente'], qualidade_ar['Ruim'])
 rule27 = ctrl.Rule(co2['Baixo'] & pm25['Alto'] & umidade['Alta'] & temperatura['Quente'], qualidade_ar['Ruim'])
 
-# CO2 Medio
 rule28 = ctrl.Rule(co2['Medio'] & pm25['Baixo'] & umidade['Baixo'] & temperatura['Fria'], qualidade_ar['Boa'])
 rule29 = ctrl.Rule(co2['Medio'] & pm25['Medio'] & umidade['Baixo'] & temperatura['Fria'], qualidade_ar['Moderada'])
 rule30 = ctrl.Rule(co2['Medio'] & pm25['Alto'] & umidade['Baixo'] & temperatura['Fria'], qualidade_ar['Moderada'])
@@ -120,7 +113,7 @@ rule52 = ctrl.Rule(co2['Medio'] & pm25['Baixo'] & umidade['Alta'] & temperatura[
 rule53 = ctrl.Rule(co2['Medio'] & pm25['Medio'] & umidade['Alta'] & temperatura['Quente'], qualidade_ar['Ruim'])
 rule54 = ctrl.Rule(co2['Medio'] & pm25['Alto'] & umidade['Alta'] & temperatura['Quente'], qualidade_ar['Ruim'])
 
-# CO2 Alto
+
 rule55 = ctrl.Rule(co2['Alto'] & pm25['Baixo'] & umidade['Baixo'] & temperatura['Fria'], qualidade_ar['Moderada'])
 rule56 = ctrl.Rule(co2['Alto'] & pm25['Medio'] & umidade['Baixo'] & temperatura['Fria'], qualidade_ar['Moderada'])
 rule57 = ctrl.Rule(co2['Alto'] & pm25['Alto'] & umidade['Baixo'] & temperatura['Fria'], qualidade_ar['Ruim'])
@@ -164,27 +157,24 @@ qualidade_ar_ctrl = ctrl.ControlSystem([
     rule79, rule80, rule81
 ])
 qualidade_do_ar_simulador = ctrl.ControlSystemSimulation(qualidade_ar_ctrl)
-def exibir_grafico():
-    # Apagar gráficos antigos
-    apagar_graficos_antigos('graficos')
-
-    graficos = []
+def Gerar_graficos():
     
-    # Salva gráficos para CO2
+    graficos = []
+    # Salva  CO2
     co2.view(sim=qualidade_do_ar_simulador)
     grafico_co2 = "graficos/co2.png"
     plt.savefig(grafico_co2)
     plt.close()
     graficos.append(grafico_co2)
 
-    # Salva gráficos para PM2.5
+    # Salva PM2.5
     pm25.view(sim=qualidade_do_ar_simulador)
     grafico_pm25 = "graficos/pm25.png"
     plt.savefig(grafico_pm25)
     plt.close()
     graficos.append(grafico_pm25)
 
-    # Salva gráficos para Umidade
+    # Salva Umidade
     umidade.view(sim=qualidade_do_ar_simulador)
     grafico_umidade = "graficos/umidade.png"
     plt.savefig(grafico_umidade)
@@ -197,7 +187,7 @@ def exibir_grafico():
     plt.close()
     graficos.append(grafico_temperatura)
 
-    # Salva gráfico para Qualidade do Ar
+    # Salva  Ar
     qualidade_ar.view(sim=qualidade_do_ar_simulador)
     grafico_qualidade = "graficos/qualidade_ar.png"
     plt.savefig(grafico_qualidade)
@@ -206,10 +196,19 @@ def exibir_grafico():
 
     return graficos
 
-# Endpoint da API para calcular a qualidade do ar
+# Rota para calcular com as regras fuzzy a qualidade
+#              const dados = {
+#                CO2: co2,
+#                'PM2.5': pm25,
+#                Umidade: umidade,
+#                Temperatura: temperatura
+#            };
+# tipo de entrada esperada
+
 @app.route('/calcular', methods=['POST'])
 def calcular_qualidade():
     try:
+        #Json da aplicacao WEb
         dados = request.json
 
         co2_func = float(dados.get('CO2'))
@@ -238,18 +237,35 @@ def calcular_qualidade():
     except Exception as e:
         return jsonify({"erro": str(e)}), 400
 
-# Gera os gráficos e retorna a lista
+# Gera os gráficos e retorna a lista em formato Json
 @app.route('/gerar_graficos', methods=['GET'])
 def gerar_graficos():
     try:
-        graficos = exibir_grafico()
+        graficos = Gerar_graficos()
         return jsonify({"graficos": graficos})
     except Exception as e:
         return jsonify({"erro": str(e)}), 400
 
-# Roda o servidor Flask
+
+# Rota para abrir o index automaticamente 
+@app.route('/')
+def index():
+    webbrowser.open("http://127.0.0.1:5500/index.html", new=1)
+
+
+# Rota para abrir o app com as rotas para ser consumido na WEB
+def AppRptas():
+    app.run(port=5000)  
+
+
 if __name__ == '__main__':
     if not os.path.exists('graficos'):
         os.makedirs('graficos')
+    
+    flask_thread = threading.Thread(target=AppRptas)
+    flask_thread.start()
 
-    app.run(debug=True)
+    # Inicia a thread para abrir o HTML
+    html_thread = threading.Thread(target=index)
+    html_thread.start()
+
