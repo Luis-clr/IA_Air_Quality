@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>AI Air Quality</h1>
+        <h1>IA Air Quality</h1>
     </header>
     <div class="flex-container">
         <div class="container">
@@ -30,8 +30,8 @@
         </div>
         
         <div class="side-container">
-            <div class="progress-circle" style="--percentage: 80;">
-                <span id="percentage-text">0%</span>
+            <div class="progresso_scores" style="--percentage: 80;">
+                <span id="progresso_porcentam">0%</span>
             </div>
             <label for="qualidade">Qualidade do Ar:</label>
             <p id="resultado_qualidade">---</p>
@@ -49,17 +49,17 @@
             </thead>
             <tbody>
                 <tr>
-                    <td class="good">Boa</td>
+                    <td class="boa">Boa</td>
                     <td>A qualidade do ar é considerada satisfatória e a poluição atmosférica representa pouco ou nenhum risco.</td>
                     <td>Nenhum</td>
                 </tr>
                 <tr>
-                    <td class="moderate">Moderada</td>
+                    <td class="moderado">Moderada</td>
                     <td>Membros de grupos sensíveis podem sofrer efeitos na saúde. O público em geral provavelmente não será afetado.</td>
                     <td>Crianças e adultos ativos e pessoas com doenças respiratórias, como asma, devem limitar o esforço prolongado ao ar livre</td>
                 </tr>
                 <tr>
-                    <td class="unhealthy-sensitive">Ruim</td>
+                    <td class="ruim">Ruim</td>
                     <td>Alerta de saúde: todos podem sofrer efeitos mais graves para a saúde</td>
                     <td>Todos devem evitar todos os esforços ao ar livre</td>
                 </tr>
@@ -68,12 +68,12 @@
     </footer>
 
     <!-- Botão centralizado para gerar gráficos -->
-    <div class="center-button">
-        <button id="gerar_graficos" onclick="reload_graficos()">Gerar Gráficos</button>
+    <div class="botao_graficos">
+        <button id="gerar_graficos" onclick="recarrega_pagina()">Gerar Gráficos</button>
     </div>
 
     <!-- Quadrados para exibir os gráficos -->
-    <div class="graphics-container">
+    <div class="graficos-container">
         <img src="graficos/co2.png" alt="Gráfico CO2">
         <img src="graficos/pm25.png" alt="Gráfico PM2.5">
         <img src="graficos/umidade.png" alt="Gráfico Umidade">

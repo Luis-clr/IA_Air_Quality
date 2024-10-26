@@ -24,27 +24,27 @@ document.getElementById('form-calculo').addEventListener('submit', function (e) 
     .then(response => response.json())
     .then(data => {
         document.getElementById('resultado_qualidade').textContent = `${data.qualidade_descricao} (${data.qualidade_percentual.toFixed(2)}%)`;
-        updateProgress(data.qualidade_percentual);
+        progresso_barra(data.qualidade_percentual);
     })
     .catch(error => console.error('Erro:', error));
 });
 
-function reload_graficos() {
+function recarrega_pagina() {
 
     setTimeout(function() {
-        location.reload(); // Recarrega a página após 2 segundos
-    }, 2000); // 2000 milissegundos = 2 segundos
+        location.reload();
+    }, 2000); 
 }
 
 
-function updateProgress(percentage) {
-const progressCircle = document.querySelector('.progress-circle');
-const percentageText = document.getElementById('percentage-text');
+function progresso_barra(percentage) {
+const progresso_circulo = document.querySelector('.progresso_scores');
+const porcentagem_textoo = document.getElementById('progresso_porcentam');
 
-// Atualiza o valor da porcentagem no centro do círculo
-percentageText.textContent = `${percentage.toFixed(2)}%`;
 
-// Definir a cor de fundo do círculo baseado na qualidade do ar
+porcentagem_textoo.textContent = `${percentage.toFixed(2)}%`;
+
+
 let circleColor;
 
 if (percentage < 30) {
@@ -56,9 +56,7 @@ if (percentage < 30) {
 }
 
 // Aplicar a cor ao círculo
-progressCircle.style.setProperty('--percentage', percentage);
-progressCircle.style.setProperty('background', `conic-gradient(${circleColor} calc(${percentage}% ), #e4e4e4 0)`);
-
-// Garantir que o círculo mantenha seu formato
-progressCircle.style.borderRadius = '50%';
+progresso_circulo.style.setProperty('--percentage', percentage);
+progresso_circulo.style.setProperty('background', `conic-gradient(${circleColor} calc(${percentage}% ), #e4e4e4 0)`);
+progresso_circulo.style.borderRadius = '50%';
 }

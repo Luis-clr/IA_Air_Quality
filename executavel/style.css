@@ -87,40 +87,25 @@ th {
     background-color: #1473e6;
     color: white;
 }
-.good {
+.boa {
     background-color: #00a651;
     color: white;
 }
-.moderate {
+.moderado {
     background-color: #ffde33;
 }
-.unhealthy-sensitive {
+.ruim {
     background-color: #ff0000;
     color: black;
 }
-.graphics-container {
+.graficos-container {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
     gap: 10px;
     margin-top: 20px;
 }
-.graphic-box {
-    width: 100%;
-    height: 100%px;
-    background-color: #e0e0e0;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-}
-.graphic-box img {
-    max-width: 100%;
-    max-height: 100%;
-    border-radius: 10px;
-}
-.progress-circle {
+.progresso_scores {
 width: 120px;
 height: 120px;
 border-radius: 50%; /* Arredonda para ser um círculo */
@@ -129,7 +114,7 @@ position: relative;
 background: conic-gradient(rgb(255, 255, 255) calc(var(--percentage) * 1%), #ffffff 0); /* Definição inicial */
 }
 
-.progress-circle::before {
+.progresso_scores::before {
     content: '';
     width: 100%;
     height: 100%;
@@ -137,7 +122,7 @@ background: conic-gradient(rgb(255, 255, 255) calc(var(--percentage) * 1%), #fff
     position: absolute;
 }
 
-.progress-circle span {
+.progresso_scores span {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -148,7 +133,7 @@ background: conic-gradient(rgb(255, 255, 255) calc(var(--percentage) * 1%), #fff
     font-weight: bold;
     color: #000;
 }
-.center-button {
+.botao_graficos {
     text-align: center;
     margin-top: 20px;
 }
